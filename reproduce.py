@@ -99,14 +99,74 @@ def main():
 
     t0 = time.time()
     
-    # Load count matrices
-    fra_counts = pd.read_csv(os.path.join(MAT_DIR, "france_anticipation_counts.csv"), index_col=0)
-    arg_counts = pd.read_csv(os.path.join(MAT_DIR, "argentina_anticipation_counts.csv"), index_col=0)
-    mar_counts = pd.read_csv(os.path.join(MAT_DIR, "morocco_anticipation_counts.csv"), index_col=0)
-    srb_counts = pd.read_csv(os.path.join(MAT_DIR, "serbia_anticipation_counts.csv"), index_col=0)
-    
-    arg_fra = pd.read_csv(os.path.join(MAT_DIR, "cross_arg_leads_fra_counts.csv"), index_col=0)
-    fra_arg = pd.read_csv(os.path.join(MAT_DIR, "cross_fra_leads_arg_counts.csv"), index_col=0)
+    if args.recalculate:
+        print("[REPRODUCE] Recalculating anticipation counts directly from extracted features (.npz)...")
+        fra_roster = {
+            'FRA_4':'Varane', 'FRA_5':'Kounde', 'FRA_7':'Griezmann', 'FRA_8':'Tchouameni',
+            'FRA_9':'Giroud', 'FRA_10':'Mbappe', 'FRA_11':'Dembele', 'FRA_12':'KoloMuani',
+            'FRA_14':'Rabiot', 'FRA_18':'Upamecano', 'FRA_20':'Coman', 'FRA_22':'THernandez',
+            'FRA_25':'Camavinga', 'FRA_26':'M.Thuram'
+        }
+        fra_counts = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_10517_final_features.npz"),
+            fra_roster, fra_roster, outliers=['Kounde']
+        )
+        arg_roster = {
+            'ARG_3':'Tagliafico', 'ARG_5':'Paredes', 'ARG_7':'De Paul', 'ARG_9':'Alvarez',
+            'ARG_10':'Messi', 'ARG_13':'Romero', 'ARG_14':'Palacios', 'ARG_19':'Otamendi',
+            'ARG_20':'Mac Allister', 'ARG_21':'Dybala', 'ARG_24':'Enzo', 'ARG_25':'L.Martinez', 'ARG_26':'Molina'
+        }
+        arg_counts = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_10514_argentina_features.npz"),
+            arg_roster, arg_roster, outliers=['Paredes', 'Enzo']
+        )
+        mar_roster = {
+            'MAR_2':'Hakimi', 'MAR_3':'Mazraoui', 'MAR_4':'Amrabat', 'MAR_7':'Ziyech',
+            'MAR_8':'Ounahi', 'MAR_9':'Hamdallah', 'MAR_14':'Aboukhlal', 'MAR_15':'Amallah',
+            'MAR_17':'Boufal', 'MAR_18':'El Yamiq', 'MAR_19':'En-Nesyri', 'MAR_20':'Dari', 'MAR_25':'Attiyat Allah'
+        }
+        mar_counts = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_10515_morocco_features.npz"),
+            mar_roster, mar_roster, outliers=['Amrabat']
+        )
+        srb_roster = {
+            'SRB_2':'Pavlovic', 'SRB_4':'Milenkovic', 'SRB_5':'Veljkovic', 'SRB_6':'Maksimovic',
+            'SRB_7':'Radonjic', 'SRB_9':'A.Mitrovic', 'SRB_10':'Tadic', 'SRB_13':'S.Mitrovic',
+            'SRB_14':'Zivkovic', 'SRB_16':'Lukic', 'SRB_17':'Kostic', 'SRB_20':'S.Milinkovic',
+            'SRB_21':'Djuricic', 'SRB_26':'Grujic'
+        }
+        srb_counts = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_3840_serbia_features.npz"),
+            srb_roster, srb_roster, outliers=[]
+        )
+        arg_cross_roster = {
+            'ARG_3':'Tagliafico', 'ARG_7':'De Paul', 'ARG_9':'Alvarez', 'ARG_10':'Messi',
+            'ARG_13':'Romero', 'ARG_19':'Otamendi', 'ARG_20':'Mac Allister', 'ARG_21':'Dybala',
+            'ARG_26':'Molina'
+        }
+        fra_cross_roster = {
+            'FRA_4':'Varane', 'FRA_7':'Griezmann', 'FRA_8':'Tchouameni', 'FRA_9':'Giroud',
+            'FRA_10':'Mbappe', 'FRA_11':'Dembele', 'FRA_12':'KoloMuani', 'FRA_14':'Rabiot',
+            'FRA_18':'Upamecano', 'FRA_20':'Coman', 'FRA_22':'T.Hernandez', 'FRA_25':'Camavinga', 'FRA_26':'M.Thuram'
+        }
+        arg_fra = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_10517_final_features.npz"),
+            arg_cross_roster, fra_cross_roster
+        )
+        fra_arg = run_window_anticipation_counts(
+            os.path.join(FEAT_DIR, "match_10517_final_features.npz"),
+            fra_cross_roster, arg_cross_roster
+        )
+    else:
+        # Load count matrices
+        fra_counts = pd.read_csv(os.path.join(MAT_DIR, "france_anticipation_counts.csv"), index_col=0)
+        arg_counts = pd.read_csv(os.path.join(MAT_DIR, "argentina_anticipation_counts.csv"), index_col=0)
+        mar_counts = pd.read_csv(os.path.join(MAT_DIR, "morocco_anticipation_counts.csv"), index_col=0)
+        srb_counts = pd.read_csv(os.path.join(MAT_DIR, "serbia_anticipation_counts.csv"), index_col=0)
+        
+        arg_fra = pd.read_csv(os.path.join(MAT_DIR, "cross_arg_leads_fra_counts.csv"), index_col=0)
+        fra_arg = pd.read_csv(os.path.join(MAT_DIR, "cross_fra_leads_arg_counts.csv"), index_col=0)
+
 
     for df in [fra_counts, arg_counts, mar_counts, srb_counts]:
         np.fill_diagonal(df.values, 0)
@@ -119,10 +179,10 @@ def main():
     }
 
     print("--- Verifying Target Partnership Findings ---")
-    print(f"  France:    Tchouaméni -> Rabiot: {fra_counts.loc['Tchouameni', 'Rabiot']} phases | Rabiot -> Tchouaméni: {fra_counts.loc['Rabiot', 'Tchouameni']} phases")
-    print(f"  Argentina: Mac Allister <-> Messi: {arg_counts.loc['Mac Allister', 'Messi']} phases | Álvarez -> Messi: {arg_counts.loc['Alvarez', 'Messi']} phases")
-    print(f"  Morocco:   Ziyech -> Hakimi: {mar_counts.loc['Ziyech', 'Hakimi']} phases | Hakimi -> Ziyech: {mar_counts.loc['Hakimi', 'Ziyech']} phases")
-    print(f"  Serbia:    Tadić -> Mitrović: {srb_counts.loc['Tadic', 'A.Mitrovic']} phases | Mitrović -> Tadić: {srb_counts.loc['A.Mitrovic', 'Tadic']} phases")
+    print(f"  France:    Top Pair: Rabiot -> Tchouaméni: {fra_counts.loc['Rabiot', 'Tchouameni']} | Reciprocal: Tchouaméni -> Rabiot: {fra_counts.loc['Tchouameni', 'Rabiot']}")
+    print(f"  Argentina: Top Pair: Messi -> Mac Allister: {arg_counts.loc['Messi', 'Mac Allister']} | Álvarez -> Messi: {arg_counts.loc['Alvarez', 'Messi']}")
+    print(f"  Morocco:   Top Pair: Hakimi -> Ounahi: {mar_counts.loc['Hakimi', 'Ounahi']} | Ziyech ↔ Hakimi: {mar_counts.loc['Ziyech', 'Hakimi']} / {mar_counts.loc['Hakimi', 'Ziyech']}")
+    print(f"  Serbia:    Top Pair: Tadić -> Mitrović: {srb_counts.loc['Tadic', 'A.Mitrovic']} | Reciprocal: Mitrović -> Tadić: {srb_counts.loc['A.Mitrovic', 'Tadic']}")
     print(f"  Final:     Mac Allister -> Tchouaméni: {arg_fra.loc['Mac Allister', 'Tchouameni']} phases")
     print(f"  Final:     Tchouaméni -> Mac Allister: {fra_arg.loc['Tchouameni', 'Mac Allister']} | Messi: {fra_arg.loc['Tchouameni', 'Messi']} | Álvarez: {fra_arg.loc['Tchouameni', 'Alvarez']}\n")
 

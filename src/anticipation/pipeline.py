@@ -111,13 +111,5 @@ def run_window_anticipation_counts(npz_path, leaders_dict, followers_dict,
     if outliers:
         count_df = count_df.drop(index=outliers, columns=outliers, errors='ignore')
         
-    # Drop completely inactive players (all zeros across rows and columns)
-    zero_players = [p for p in count_df.index if (count_df.loc[p] == 0).all() and (count_df[p] == 0).all()]
-    if zero_players and set(zero_players) != set(count_df.index):
-        # Keep Dybala and L.Martinez if requested for cross-team
-        keep = {'Dybala', 'L.Martinez'}
-        drop = [p for p in zero_players if p not in keep]
-        if drop:
-            count_df = count_df.drop(index=drop, columns=drop, errors='ignore')
-            
     return count_df
+
