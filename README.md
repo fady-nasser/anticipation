@@ -2,6 +2,7 @@
 
 **From predicting opponents to understanding teammates.**
 
+[![Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fady-nasser/anticipation/blob/main/notebooks/reproduce_anticipation.ipynb)
 [![Code license: MIT](https://img.shields.io/badge/Code%20license-MIT-blue.svg)](LICENSE)
 [![SSAC 2027](https://img.shields.io/badge/SSAC-2027%20Submission-orange.svg)](docs/ABSTRACT.md)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](pyproject.toml)
