@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Proprietary Raw Tracking Data
+data raw/
+*.jsonl.bz2
+*.bz2
+
+# Root-level exploratory scratch files
+/*.csv
+/*.png
+/*.ipynb
+/*.txt
+!requirements.txt
+/*.log
+
+# Temporary & checkpoint files
+granger_checkpoint*
+results_pairs*
+mbappe_*
+test_*
+pdf_page_*
+scratch/
+Untitled*
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints
+
+# OS generated
+.DS_Store
+Thumbs.db
